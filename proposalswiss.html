@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PROPOSAL SWISS</title>
+<script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#A48454;--gold-soft:#C9A877;--gold-pale:rgba(164,132,84,0.08);
+  --night:#0F172A;--night2:#1E293B;
+  --surface:#F5F4EF;--white:#fff;
+  --border:rgba(15,23,42,0.09);--border2:rgba(15,23,42,0.13);
+  --text:#0F172A;--text2:rgba(15,23,42,0.62);--text3:rgba(15,23,42,0.38);
+  --red:#DC2626;--green:#16A34A;
+  --sw:248px;
+  --font:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --serif:'Cormorant Garamond','Georgia',serif;
+}
+html,body{height:100%;font-family:var(--font);font-size:13px;color:var(--text);background:var(--surface);overflow:hidden}
+button{cursor:pointer;font-family:inherit;font-size:inherit;border:none;background:none}
+input,textarea,select{font-family:inherit;font-size:inherit}
+svg.lucide{display:inline-block;vertical-align:middle;flex-shrink:0}
+
+/* ═══ LOGIN SCREEN ═══ */
+#login-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--night);
+  background-image:
+    radial-gradient(ellipse at 25% 15%,rgba(164,132,84,0.13) 0%,transparent 55%),
+    radial-gradient(ellipse at 75% 85%,rgba(164,132,84,0.07) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 50%,rgba(15,23,42,0.4) 0%,transparent 70%);
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.45s ease;
+}
+#login-screen.out{opacity:0;pointer-events:none}
+.lc{
+  width:420px;
+  background:rgba(255,255,255,0.032);
+  border:1px solid rgba(164,132,84,0.2);
+  border-radius:10px;
+  padding:52px 44px 44px;
+  backdrop-filter:blur(16px);
+  text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,0.45), 0 1px 0 rgba(164,132,84,0.15) inset;
+}
+.lc-mono{
+  width:56px;height:56px;border-radius:7px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+  font-family:var(--serif);font-size:20px;font-weight:700;color:var(--night);letter-spacing:0.1em;
+  box-shadow:0 8px 28px rgba(164,132,84,0.4), 0 1px 0 rgba(255,255,255,0.2) inset;
+}
+.lc-brand{font-family:var(--serif);font-size:24px;font-weight:500;color:#fff;letter-spacing:0.12em;margin-bottom:4px}
+.lc-sub{font-size:9.5px;letter-spacing:0.32em;text-transform:uppercase;color:var(--gold);margin-bottom:38px;opacity:0.9}
+.lc-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(164,132,84,0.35),transparent);margin-bottom:30px}
+.lc-label{display:block;font-size:9.5px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:rgba(255,255,255,0.45);text-align:left;margin-bottom:7px}
+.lc-input{
+  width:100%;padding:13px 16px;border-radius:6px;
+  background:rgba(255,255,255,0.055);
+  border:1px solid rgba(164,132,84,0.2);
+  color:#fff;font-size:13.5px;outline:none;
+  transition:border-color 0.18s,box-shadow 0.18s,background 0.18s;
+  margin-bottom:14px;
+}
+.lc-input::placeholder{color:rgba(255,255,255,0.25)}
+.lc-input:focus{border-color:rgba(164,132,84,0.7);background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(164,132,84,0.14)}
+.lc-btn{
+  width:100%;padding:14px;border-radius:6px;margin-top:6px;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-soft) 100%);
+  color:var(--night);font-size:13.5px;font-weight:700;letter-spacing:0.09em;
+  box-shadow:0 6px 22px rgba(164,132,84,0.38), 0 1px 0 rgba(255,255,255,0.25) inset;
+  transition:opacity 0.15s,transform 0.12s,box-shadow 0.15s;
+}
+.lc-btn:hover{opacity:0.93;transform:translateY(-1px);box-shadow:0 10px 28px rgba(164,132,84,0.45)}
+.lc-btn:active{transform:translateY(0);box-shadow:0 4px 14px rgba(164,132,84,0.3)}
+.lc-err{color:#F87171;font-size:11.5px;min-height:18px;margin-top:11px;transition:opacity 0.2s}
+.lc-hint{margin-top:22px;font-size:10.5px;color:rgba(255,255,255,0.28);line-height:1.7}
+.lc-hint strong{color:rgba(255,255,255,0.5)}
+
+/* ═══ NAME SETUP OVERLAY ═══ */
+#name-setup{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(15,23,42,0.75);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;
+}
+#name-setup.open{display:flex}
+.ns-card{
+  width:400px;background:#fff;border-radius:9px;padding:36px 36px 30px;text-align:center;
+  box-shadow:0 24px 72px rgba(15,23,42,0.35);
+}
+.ns-icon{width:48px;height:48px;border-radius:50%;background:var(--gold-pale);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.ns-icon svg{color:var(--gold)}
+.ns-title{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--text);margin-bottom:6px}
+.ns-sub{font-size:12px;color:var(--text2);margin-bottom:24px;line-height:1.6}
+.ns-input{
+  width:100%;border:1px solid rgba(15,23,42,0.14);border-radius:5px;
+  padding:12px 14px;font-size:14px;color:var(--text);background:#fafafa;
+  outline:none;text-align:center;transition:border-color 0.15s,box-shadow 0.15s;
+  margin-bottom:16px;
+}
+.ns-input:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(164,132,84,0.1)}
+.ns-btn{
+  width:100%;padding:12px;border-radius:5px;
+  background:var(--night);color:#fff;font-size:13px;font-weight:600;
+  transition:background 0.15s;
+}
+.ns-btn:hover{background:var(--night2)}
+
+/* ═══ APP ═══ */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ─── SIDEBAR ─── */
+#sidebar{
+  width:var(--sw);min-width:var(--sw);height:100vh;
+  position:fixed;left:0;top:0;z-index:50;
+  background:var(--night);
+  background-image:radial-gradient(circle at 18% 2%,rgba(164,132,84,0.1) 0%,transparent 50%);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-logo{padding:20px 18px 14px;display:flex;align-items:center;gap:10px}
+.sb-mono{
+  width:32px;height:32px;flex-shrink:0;border-radius:4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:12px;font-weight:700;color:var(--night);letter-spacing:0.12em;
+  box-shadow:0 4px 12px rgba(164,132,84,0.3);
+}
+.sb-brand{color:#fff;font-size:14px;font-weight:500;letter-spacing:0.12em;font-family:var(--serif)}
+.sb-tagline{color:rgba(164,132,84,0.75);font-size:8px;letter-spacing:0.28em;text-transform:uppercase}
+.sb-div{height:1px;margin:0 16px 12px;background:linear-gradient(90deg,transparent,rgba(164,132,84,0.4),transparent)}
+.sb-new{
+  margin:0 12px 10px;padding:10px 14px;border-radius:4px;
+  background:linear-gradient(135deg,rgba(164,132,84,0.15),rgba(164,132,84,0.05));
+  border:1px solid rgba(164,132,84,0.4);
+  display:flex;align-items:center;gap:8px;
+  color:#fff;font-size:12.5px;font-weight:500;
+  transition:background 0.15s;width:calc(100% - 24px);
+}
+.sb-new:hover{background:rgba(164,132,84,0.22)}
+.sb-new svg{color:var(--gold)}
+nav{flex:1;padding:2px 0}
+.nav-btn{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:10px 18px;color:rgba(255,255,255,0.55);
+  font-size:12.5px;text-align:left;position:relative;
+  transition:color 0.15s,background 0.15s;
+}
+.nav-btn:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.04)}
+.nav-btn.active{color:#fff;font-weight:500}
+.nav-btn.active::before{
+  content:'';position:absolute;left:0;top:6px;bottom:6px;
+  width:2px;border-radius:0 2px 2px 0;background:var(--gold);
+}
+.nav-btn.active svg{color:var(--gold)!important}
+.nav-badge{
+  margin-left:auto;background:rgba(164,132,84,0.14);color:var(--gold-soft);
+  font-size:9.5px;padding:1px 7px;border-radius:3px;
+  border:1px solid rgba(164,132,84,0.28);
+}
+.sb-bk{margin:8px 12px 10px;padding:10px 12px;border-radius:4px;border:1px solid rgba(164,132,84,0.28);background:rgba(164,132,84,0.07)}
+.sb-bk-head{display:flex;align-items:center;gap:6px;color:var(--gold);font-size:9.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px}
+.sb-bk p{color:rgba(255,255,255,0.45);font-size:9.5px;line-height:1.55}
+.sb-user{border-top:1px solid rgba(255,255,255,0.07);padding:12px;position:relative}
+.sb-user-btn{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:6px 8px;border-radius:4px;transition:background 0.15s;
+}
+.sb-user-btn:hover{background:rgba(255,255,255,0.05)}
+.sb-av{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--night);
+}
+.sb-username{color:#fff;font-size:11.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:126px;text-align:left}
+.sb-role{color:rgba(255,255,255,0.4);font-size:9.5px;white-space:nowrap;text-align:left}
+.user-chev{margin-left:auto;color:rgba(255,255,255,0.35);transition:transform 0.2s}
+.user-menu{
+  position:absolute;bottom:68px;left:8px;right:8px;
+  background:#fff;border:1px solid rgba(15,23,42,0.12);border-radius:6px;
+  box-shadow:0 -8px 28px rgba(15,23,42,0.22);z-index:200;overflow:hidden;
+  display:none;
+}
+.user-menu.open{display:block}
+.um-item{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:10px 14px;border-bottom:1px solid rgba(15,23,42,0.06);
+  font-size:12px;color:var(--text);text-align:left;
+  transition:background 0.12s;
+}
+.um-item:last-child{border-bottom:none;color:var(--red)}
+.um-item:hover{background:#f8fafc}
+.um-item:last-child:hover{background:#fef2f2}
+.um-item svg{flex-shrink:0}
+
+/* ─── MAIN ─── */
+#main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ─── TOPBAR ─── */
+#topbar{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 24px;flex-shrink:0}
+.search-box{flex:1;max-width:320px;display:flex;align-items:center;gap:8px;border:1px solid rgba(15,23,42,0.12);border-radius:5px;padding:7px 12px;background:#fafafa;transition:border-color 0.15s,box-shadow 0.15s}
+.search-box:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(164,132,84,0.1)}
+.search-box input{border:none;background:none;outline:none;font-size:12.5px;color:var(--text);width:100%}
+.search-box input::placeholder{color:var(--text3)}
+.search-box svg{color:var(--text3);flex-shrink:0}
+.tb-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.notif-wrap{position:relative}
+.notif-btn{width:36px;height:36px;background:#fff;border:1px solid rgba(15,23,42,0.11);border-radius:5px;display:flex;align-items:center;justify-content:center;transition:background 0.12s;position:relative}
+.notif-btn:hover{background:#f8fafc}
+.notif-dot{position:absolute;top:7px;right:7px;width:6px;height:6px;border-radius:50%;background:var(--gold);border:1.5px solid #fff}
+.notif-dd{position:absolute;right:0;top:calc(100% + 8px);width:286px;background:#fff;border:1px solid rgba(15,23,42,0.11);border-radius:7px;box-shadow:0 12px 40px rgba(15,23,42,0.16);z-index:300;overflow:hidden;display:none}
+.notif-dd.open{display:block}
+.notif-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--border)}
+.notif-hd span{font-size:12px;font-weight:600;color:var(--text)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.notif-row{display:flex;align-items:center;gap:9px;padding:9px 15px;border-bottom:1px solid rgba(15,23,42,0.05);font-size:11.5px;color:var(--text2)}
+.notif-row svg{flex-shrink:0}
+.notif-foot{padding:8px 15px;text-align:center;font-size:10px;color:var(--text3)}
+.ch-pill{display:flex;align-items:center;gap:6px;background:rgba(34,197,94,0.08);padding:6px 12px;border-radius:20px}
+.ch-dot{width:6px;height:6px;border-radius:50%;background:#22C55E;box-shadow:0 0 6px #22C55E}
+.ch-pill span{font-size:10px;font-weight:600;color:#15803D;letter-spacing:0.08em}
+
+/* ─── CONTENT ─── */
+#content{flex:1;overflow-y:auto}
+.view{display:none;padding:28px 32px}
+.view.active{display:block}
+.view-tag{display:flex;align-items:center;gap:7px;font-size:9.5px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.page-h1{font-size:27px;font-weight:500;color:var(--text);letter-spacing:-0.02em;font-family:var(--serif);line-height:1.2}
+.page-sub{font-size:12.5px;color:var(--text2);margin-top:3px}
+
+/* ─── STATS ─── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:7px;padding:16px}
+.stat-icon{width:32px;height:32px;background:var(--gold-pale);border-radius:5px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.stat-icon svg{color:var(--gold)}
+.stat-label{font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.stat-val{font-size:21px;font-weight:500;color:var(--text);font-family:var(--serif)}
+
+/* ─── SECTION ─── */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+.sec-title{font-size:17px;font-weight:500;color:var(--text);font-family:var(--serif)}
+
+/* ─── TABLE ─── */
+.tbl-wrap{background:#fff;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 15px;text-align:left;font-size:9px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+td{padding:11px 15px;border-bottom:1px solid rgba(15,23,42,0.04);font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(15,23,42,0.015)}
+
+/* ─── BADGES ─── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:4px;font-size:10px;font-weight:500}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0}
+.b-e{background:rgba(148,163,184,0.15);color:#64748B}
+.b-v{background:rgba(164,132,84,0.12);color:#8A6A3A}
+.b-n{background:rgba(59,130,246,0.1);color:#1D4ED8}
+.b-a{background:rgba(34,197,94,0.1);color:#15803D}
+.b-x{background:rgba(220,38,38,0.1);color:#B91C1C}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 15px;border-radius:5px;font-size:12px;font-weight:500;transition:all 0.15s;line-height:1}
+.btn-primary{background:var(--night);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 4px 12px rgba(15,23,42,0.2)}
+.btn-primary:hover{background:var(--night2)}
+.btn-outline{background:#fff;color:var(--text);border:1px solid rgba(15,23,42,0.13)}
+.btn-outline:hover{background:#f8fafc}
+.btn-ghost{background:transparent;color:var(--gold);padding:6px 10px;font-size:11px}
+.btn-ghost:hover{background:rgba(164,132,84,0.07)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn svg{flex-shrink:0}
+
+/* ─── OFFERTEN LIST ─── */
+.off-row{background:#fff;border:1px solid var(--border);border-radius:7px;padding:13px 16px;display:flex;align-items:center;gap:14px;margin-bottom:7px;transition:border-color 0.15s}
+.off-row:hover{border-color:rgba(164,132,84,0.45)}
+.off-info{flex:1;min-width:0}
+.off-meta{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
+.off-ref{font-family:monospace;font-size:11px;color:var(--gold)}
+.off-date{font-size:10px;color:var(--text3)}
+.off-kunde{font-size:14px;font-weight:500;color:var(--text);font-family:var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.off-titel{font-size:11.5px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.off-amt{text-align:right;flex-shrink:0}
+.off-amt strong{display:block;font-family:monospace;font-size:13px;color:var(--text)}
+.off-amt small{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)}
+.off-actions{display:flex;align-items:center;gap:6px}
+.icon-btn{width:32px;height:32px;border:1px solid rgba(15,23,42,0.11);border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;transition:background 0.12s}
+.icon-btn:hover{background:#f8fafc}
+.icon-btn.del:hover{background:#fef2f2;border-color:rgba(220,38,38,0.2)}
+.icon-btn.del svg{color:var(--red)}
+.status-sel{border:1px solid rgba(15,23,42,0.11);border-radius:4px;padding:5px 7px;font-size:10.5px;color:var(--text);background:#fff;outline:none}
+
+/* ─── EMPTY ─── */
+.empty{text-align:center;padding:52px 20px}
+.empty-ico{width:48px;height:48px;background:var(--gold-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.empty-ico svg{color:var(--gold)}
+.empty h3{font-size:15px;font-weight:500;color:var(--text);font-family:var(--serif);margin-bottom:6px}
+.empty p{font-size:12px;color:var(--text2);margin-bottom:16px}
+
+/* ─── TEMPLATES ─── */
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:22px}
+.tpl-card{background:#fff;border:1px solid var(--border);border-radius:7px;padding:18px;cursor:pointer;transition:border-color 0.15s,box-shadow 0.15s;text-align:left}
+.tpl-card:hover{border-color:var(--gold);box-shadow:0 6px 20px rgba(15,23,42,0.08)}
+.tpl-card:hover .tpl-cta{opacity:1}
+.tpl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.tpl-ico{width:36px;height:36px;background:var(--gold-pale);border-radius:5px;display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+.tpl-card:hover .tpl-ico{background:rgba(164,132,84,0.16)}
+.tpl-ico svg{color:var(--gold)}
+.tpl-count{font-family:monospace;font-size:10px;color:var(--text3)}
+.tpl-title{font-size:14px;font-weight:500;color:var(--text);font-family:var(--serif);margin-bottom:4px}
+.tpl-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.tpl-cta{margin-top:10px;font-size:10.5px;color:var(--gold);display:flex;align-items:center;gap:4px;opacity:0;transition:opacity 0.15s;font-weight:500}
+
+/* ─── SETTINGS ─── */
+.set-layout{display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:22px}
+.set-card{background:#fff;border:1px solid var(--border);border-radius:7px;overflow:hidden;margin-bottom:12px}
+.set-card-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border)}
+.set-card-title{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--text)}
+.set-card-title svg{color:var(--gold)}
+.set-body{padding:16px 18px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg1{grid-template-columns:1fr}
+.fw{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:9.5px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--text3)}
+.fi{width:100%;border:1px solid rgba(15,23,42,0.12);border-radius:4px;padding:8px 10px;font-size:12.5px;color:var(--text);background:#fafafa;outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+.fi:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(164,132,84,0.1)}
+.badge-on{background:var(--gold);color:#fff;font-size:8.5px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:0.1em}
+.rule-item{border-bottom:1px solid rgba(15,23,42,0.05)}
+.rule-item:last-child{border-bottom:none}
+.rule-toggle{width:100%;display:flex;align-items:center;gap:10px;padding:11px 18px;text-align:left;transition:background 0.12s}
+.rule-toggle:hover{background:rgba(164,132,84,0.03)}
+.rule-id{font-family:monospace;font-size:10px;font-weight:700;min-width:34px}
+.rule-id.e{color:var(--red)}.rule-id.w{color:#D97706}.rule-id.i{color:var(--gold)}
+.rule-name{font-size:12px;font-weight:500;color:var(--text)}
+.rule-chev{margin-left:auto;color:var(--gold);transition:transform 0.2s}
+.rule-body{display:none;padding:0 18px 14px}
+.rule-body.open{display:block}
+.rule-desc{font-size:11.5px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ex-card{background:#fafafa;border:1px solid var(--border);border-radius:4px;padding:9px 11px}
+.ex-lbl{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:5px}
+.ex-lbl.w{color:var(--red)}.ex-lbl.r{color:var(--gold)}
+.ex-txt{font-size:11px;color:var(--text);white-space:pre-line;line-height:1.5}
+.sys-box{background:var(--night);border:1px solid rgba(15,23,42,0.08);border-radius:7px;padding:18px}
+.sys-tag{color:var(--gold);font-size:9px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.sys-h{color:#fff;font-size:13px;font-weight:500;font-family:var(--serif);margin-bottom:14px}
+.sys-pre{background:rgba(0,0,0,0.35);border:1px solid rgba(164,132,84,0.18);border-radius:4px;padding:13px;font-family:monospace;font-size:9.5px;color:rgba(255,255,255,0.72);line-height:1.65;white-space:pre}
+
+/* ─── MODALS ─── */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:400;padding:16px}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:8px;width:500px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(15,23,42,0.3)}
+.modal-wide{width:700px}
+.modal-narrow{width:420px}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-title{font-size:15px;font-weight:500;color:var(--text);font-family:var(--serif)}
+.modal-close{width:28px;height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:background 0.12s}
+.modal-close:hover{background:#f1f5f9}
+.modal-close svg{color:var(--text3)}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ─── FORM ─── */
+.fr{margin-bottom:14px}
+.flb{font-size:9.5px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--text3);margin-bottom:5px;display:block}
+.fin{width:100%;border:1px solid rgba(15,23,42,0.12);border-radius:4px;padding:9px 11px;font-size:12.5px;color:var(--text);background:#fafafa;outline:none;transition:border-color 0.15s,box-shadow 0.15s}
+.fin:focus{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(164,132,84,0.1)}
+.pfx-wrap{display:flex;align-items:center;gap:8px;border:1px solid rgba(15,23,42,0.12);border-radius:4px;padding:9px 11px;background:#fafafa;transition:border-color 0.15s}
+.pfx-wrap:focus-within{border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(164,132,84,0.1)}
+.pfx{font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0}
+.pfx-wrap input{border:none;background:none;outline:none;font-size:12.5px;color:var(--text);width:100%;font-family:inherit}
+.tone-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.tone-opt{border:1px solid rgba(15,23,42,0.12);border-radius:4px;padding:10px;background:none;text-align:left;cursor:pointer;transition:all 0.15s}
+.tone-opt:hover{border-color:var(--gold)}
+.tone-opt.sel{border-color:var(--gold);background:rgba(164,132,84,0.06)}
+.tone-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.tone-opt.sel .tone-name{color:var(--gold)}
+.tone-sub{font-size:10px;color:var(--text3)}
+
+/* ─── DOC PREVIEW ─── */
+.doc-preview{border:1px solid rgba(15,23,42,0.1);border-radius:5px;overflow:hidden;background:#fff}
+.doc-gold-bar{height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-soft),var(--gold))}
+.doc-body{padding:32px 36px;font-family:var(--font)}
+.comp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bk-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:4px;font-size:10.5px;font-weight:600;background:rgba(34,197,94,0.09);color:#15803D}
+
+/* ─── PROFIL MODAL ─── */
+.profil-av{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-soft));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--night);margin:0 auto 18px}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--night);color:#fff;padding:11px 18px;border-radius:7px;font-size:12px;display:flex;align-items:center;gap:9px;z-index:1000;opacity:0;transform:translateY(8px);transition:opacity 0.3s,transform 0.3s;pointer-events:none;box-shadow:0 8px 24px rgba(15,23,42,0.3)}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast svg{color:#22C55E;flex-shrink:0}
+
+/* ─── PRINT ─── */
+@media print{
+  #login-screen,#name-setup,#sidebar,#topbar,.comp-row,.modal-hd,button,select,.toast{display:none!important}
+  #main{margin-left:0!important}
+  #content{overflow:visible!important}
+  .view{display:none!important;padding:0!important}
+  .view.active{display:block!important}
+  .doc-preview{border:none!important}
+  body{background:#fff!important;overflow:visible!important}
+  @page{margin:14mm 18mm;size:A4}
+}
+.ns-step-indicator{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.ns-step{width:28px;height:3px;border-radius:2px;background:rgba(15,23,42,0.12)}
+.ns-step.active{background:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen">
+  <div class="lc">
+    <div class="lc-mono">PS</div>
+    <div class="lc-brand">PROPOSAL SWISS</div>
+    <div class="lc-sub">Zürich</div>
+    <div class="lc-divider"></div>
+    <label class="lc-label">E-Mail oder Benutzername</label>
+    <input class="lc-input" id="l-user" type="text" placeholder="vorname.nachname@proposal.ch" autocomplete="username"/>
+    <label class="lc-label">Passwort</label>
+    <input class="lc-input" id="l-pw" type="password" placeholder="••••••••" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="lc-btn" onclick="doLogin()">Anmelden</button>
+    <div class="lc-err" id="l-err"></div>
+    <div class="lc-hint">Demo-Zugang: Passwort <strong>demo123</strong></div>
+  </div>
+</div>
+
+<!-- ═══ SMART SETUP WIZARD ═══ -->
+<div id="name-setup">
+  <div class="ns-card">
+    <!-- Step 1: Name -->
+    <div id="ns-step1">
+      <div class="ns-icon"><i data-lucide="user" style="width:22px;height:22px"></i></div>
+      <div class="ns-title">Willkommen bei Proposal Swiss</div>
+      <div class="ns-sub">Wie ist Ihr Name?<br><span style="color:var(--text3);font-size:11px">Wird als Unterschrift auf Offerten verwendet.</span></div>
+      <input class="ns-input" id="ns-name-input" type="text" placeholder="z. B. Alexander Meier" maxlength="60"
+        onkeydown="if(event.key==='Enter')nsStep1Next()"/>
+      <button class="ns-btn" onclick="nsStep1Next()">Weiter &rarr;</button>
+      <div class="ns-step-indicator"><span class="ns-step active"></span><span class="ns-step"></span></div>
+    </div>
+    <!-- Step 2: Firma -->
+    <div id="ns-step2" style="display:none">
+      <div class="ns-icon"><i data-lucide="building-2" style="width:22px;height:22px"></i></div>
+      <div class="ns-title">Ihre Firma</div>
+      <div class="ns-sub">Wie heißt Ihre Firma?<br><span style="color:var(--text3);font-size:11px">Erscheint im Logo und Briefkopf aller Offerten.</span></div>
+      <input class="ns-input" id="ns-firm-input" type="text" placeholder="z. B. IT Meier AG" maxlength="60"
+        onkeydown="if(event.key==='Enter')nsStep2Finish()"/>
+      <button class="ns-btn" onclick="nsStep2Finish()">Loslegen &#10003;</button>
+      <button onclick="nsBack()" style="display:block;width:100%;text-align:center;margin-top:10px;font-size:11px;color:var(--text3);background:none;border:none;cursor:pointer;">&larr; Zurück</button>
+      <div class="ns-step-indicator"><span class="ns-step"></span><span class="ns-step active"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-mono">PS</div>
+      <div>
+        <div class="sb-brand" id="sb-brand">PROPOSAL SWISS</div>
+        <div class="sb-tagline">Zürich</div>
+      </div>
+    </div>
+    <div class="sb-div"></div>
+    <button class="sb-new" onclick="openNeue()">
+      <i data-lucide="plus" style="width:15px;height:15px"></i>Neue Offerte
+    </button>
+    <nav>
+      <button class="nav-btn active" data-view="dashboard" onclick="setView('dashboard',this)">
+        <i data-lucide="layout-dashboard" style="width:16px;height:16px;color:rgba(255,255,255,0.5)"></i>Dashboard
+      </button>
+      <button class="nav-btn" data-view="offerten" onclick="setView('offerten',this)">
+        <i data-lucide="file-text" style="width:16px;height:16px;color:rgba(255,255,255,0.5)"></i>Aktive Offerten
+        <span class="nav-badge" id="nav-badge">0</span>
+      </button>
+      <button class="nav-btn" data-view="vorlagen" onclick="setView('vorlagen',this)">
+        <i data-lucide="files" style="width:16px;height:16px;color:rgba(255,255,255,0.5)"></i>Vorlagen
+      </button>
+      <button class="nav-btn" data-view="einstellungen" onclick="setView('einstellungen',this)">
+        <i data-lucide="settings" style="width:16px;height:16px;color:rgba(255,255,255,0.5)"></i>Einstellungen
+      </button>
+    </nav>
+    <div class="sb-bk">
+      <div class="sb-bk-head"><i data-lucide="shield-check" style="width:13px;height:13px"></i>BK-Konformität</div>
+      <p>5 Regeln aktiv · Schreibweisungen der Schweizerischen Bundeskanzlei</p>
+    </div>
+    <div class="sb-user">
+      <button class="sb-user-btn" onclick="toggleUserMenu()">
+        <div class="sb-av" id="sb-av">PS</div>
+        <div>
+          <div class="sb-username" id="sb-uname">—</div>
+          <div class="sb-role">Proposal Swiss</div>
+        </div>
+        <i data-lucide="chevron-down" style="width:14px;height:14px" class="user-chev" id="user-chev"></i>
+      </button>
+      <div class="user-menu" id="user-menu">
+        <button class="um-item" onclick="openProfil()">
+          <i data-lucide="edit-3" style="width:14px;height:14px;color:var(--gold)"></i>Profil bearbeiten
+        </button>
+        <button class="um-item" onclick="setView('einstellungen',null);closeUserMenu()">
+          <i data-lucide="settings" style="width:14px;height:14px;color:var(--gold)"></i>Einstellungen
+        </button>
+        <button class="um-item" onclick="doLogout()">
+          <i data-lucide="log-out" style="width:14px;height:14px"></i>Abmelden
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <div class="search-box">
+        <i data-lucide="search" style="width:14px;height:14px"></i>
+        <input id="srch" placeholder="Mandant oder Referenz suchen…" oninput="onSearch(this.value)"/>
+      </div>
+      <div class="tb-right">
+        <div class="notif-wrap">
+          <button class="notif-btn" onclick="toggleNotif()">
+            <i data-lucide="bell" style="width:15px;height:15px"></i>
+            <span class="notif-dot"></span>
+          </button>
+          <div class="notif-dd" id="notif-dd">
+            <div class="notif-hd"><span>Systemstatus</span><div class="live-dot"></div></div>
+            <div class="notif-row"><i data-lucide="shield-check" style="width:14px;height:14px;color:#16A34A"></i>Schweizer Compliance Engine — BK-KONFORM</div>
+            <div class="notif-row"><i data-lucide="check-circle" style="width:14px;height:14px;color:#16A34A"></i>Alle 5 BK-Regelsätze aktiv</div>
+            <div class="notif-row"><i data-lucide="refresh-cw" style="width:14px;height:14px;color:var(--gold)"></i>BK-Engine v2.0 · Bundeskanzlei</div>
+            <div class="notif-row"><i data-lucide="database" style="width:14px;height:14px;color:#2563EB"></i>localStorage-Persistenz aktiv</div>
+            <div class="notif-foot">Keine neuen Nachrichten</div>
+          </div>
+        </div>
+        <div class="ch-pill"><div class="ch-dot"></div><span>CH-SERVER · ZÜRICH</span></div>
+      </div>
+    </div>
+
+    <div id="content">
+
+      <!-- DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="view-tag"><i data-lucide="sparkles" style="width:13px;height:13px"></i>Übersicht · 2026</div>
+        <h1 class="page-h1" id="dash-greet">Guten Tag.</h1>
+        <div class="page-sub" id="dash-sub">0 Entwürfe warten auf Freigabe.</div>
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon"><i data-lucide="file-text" style="width:16px;height:16px"></i></div><div class="stat-label">Aktive Offerten</div><div class="stat-val" id="s-aktiv">0</div></div>
+          <div class="stat-card"><div class="stat-icon"><i data-lucide="trending-up" style="width:16px;height:16px"></i></div><div class="stat-label">Pipeline-Volumen</div><div class="stat-val" id="s-vol">—</div></div>
+          <div class="stat-card"><div class="stat-icon"><i data-lucide="check-circle" style="width:16px;height:16px"></i></div><div class="stat-label">Angenommen</div><div class="stat-val" id="s-ang">0</div></div>
+          <div class="stat-card"><div class="stat-icon"><i data-lucide="bar-chart-2" style="width:16px;height:16px"></i></div><div class="stat-label">Durchschn. Grösse</div><div class="stat-val" id="s-avg">—</div></div>
+        </div>
+        <div class="sec-hd">
+          <div class="sec-title">Letzte Offerten</div>
+          <button class="btn btn-outline btn-sm" onclick="setView('offerten',null)"><i data-lucide="arrow-right" style="width:13px;height:13px"></i>Alle anzeigen</button>
+        </div>
+        <div id="dash-tbl">
+          <div class="tbl-wrap"><table><thead><tr>
+            <th>Referenz</th><th>Mandant</th><th>Projekt</th><th>Status</th><th style="text-align:right">Budget (CHF)</th><th></th>
+          </tr></thead><tbody id="dash-tbody"></tbody></table></div>
+        </div>
+        <div id="dash-empty" class="empty" style="display:none">
+          <div class="empty-ico"><i data-lucide="sparkles" style="width:22px;height:22px"></i></div>
+          <h3>Noch keine Offerten</h3><p>Erstellen Sie Ihre erste Offerte.</p>
+          <button class="btn btn-primary" onclick="openNeue()"><i data-lucide="plus" style="width:13px;height:13px"></i>Erste Offerte erstellen</button>
+        </div>
+      </div>
+
+      <!-- OFFERTEN -->
+      <div class="view" id="view-offerten">
+        <div class="view-tag"><i data-lucide="sparkles" style="width:13px;height:13px"></i>Offerten-Verwaltung</div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <h1 class="page-h1">Aktive Offerten <span id="off-cnt" style="font-size:19px;opacity:.35">(0)</span></h1>
+          <button class="btn btn-primary" onclick="openNeue()"><i data-lucide="plus" style="width:13px;height:13px"></i>Neue Offerte</button>
+        </div>
+        <div id="srch-info" class="page-sub" style="margin:4px 0 14px;min-height:18px"></div>
+        <div id="off-list"></div>
+        <div id="off-empty" class="empty" style="display:none">
+          <div class="empty-ico"><i data-lucide="file-x" style="width:22px;height:22px"></i></div>
+          <h3>Keine Offerten gefunden</h3><p id="empty-msg">Erstellen Sie Ihre erste Offerte.</p>
+        </div>
+      </div>
+
+      <!-- VORLAGEN -->
+      <div class="view" id="view-vorlagen">
+        <div class="view-tag"><i data-lucide="sparkles" style="width:13px;height:13px"></i>Bibliothek</div>
+        <h1 class="page-h1">Vorlagen</h1>
+        <div class="page-sub">Klicken Sie eine Vorlage an, um einen Entwurf zu laden.</div>
+        <div class="tpl-grid">
+          <button class="tpl-card" onclick="openTemplate('anwalt')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="briefcase" style="width:17px;height:17px"></i></div><span class="tpl-count">08</span></div>
+            <div class="tpl-title">Anwaltskanzleien</div>
+            <div class="tpl-desc">Mandantenakten, DSG-konforme Plattformen, juristische Software.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+          <button class="tpl-card" onclick="openTemplate('vermoegen')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="landmark" style="width:17px;height:17px"></i></div><span class="tpl-count">12</span></div>
+            <div class="tpl-title">Vermögensverwaltung</div>
+            <div class="tpl-desc">Client-Portale, FINMA-konforme Reporting-Tools für UHNWI.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+          <button class="tpl-card" onclick="openTemplate('industrie')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="factory" style="width:17px;height:17px"></i></div><span class="tpl-count">06</span></div>
+            <div class="tpl-title">Industrie &amp; Gewerbe</div>
+            <div class="tpl-desc">ERP-Migrationen, IIoT-Plattformen, Produktionsdigitalisierung.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+          <button class="tpl-card" onclick="openTemplate('banking')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="lock" style="width:17px;height:17px"></i></div><span class="tpl-count">09</span></div>
+            <div class="tpl-title">Private Banking</div>
+            <div class="tpl-desc">Mobile Banking, Wealth-Dashboards, FINMA-konform.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+          <button class="tpl-card" onclick="openTemplate('beratung')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="users" style="width:17px;height:17px"></i></div><span class="tpl-count">14</span></div>
+            <div class="tpl-title">Beratungsmandate</div>
+            <div class="tpl-desc">Strategie-Workshops, Due-Diligence, M&A-Begleitung.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+          <button class="tpl-card" onclick="openTemplate('health')">
+            <div class="tpl-top"><div class="tpl-ico"><i data-lucide="heart-pulse" style="width:17px;height:17px"></i></div><span class="tpl-count">05</span></div>
+            <div class="tpl-title">Premium-Healthcare</div>
+            <div class="tpl-desc">Privatklinik-Software, Patientenportale, eHealth-konform.</div>
+            <div class="tpl-cta"><i data-lucide="plus" style="width:12px;height:12px"></i>Als Offerte erstellen</div>
+          </button>
+        </div>
+      </div>
+
+      <!-- EINSTELLUNGEN -->
+      <div class="view" id="view-einstellungen">
+        <div class="view-tag"><i data-lucide="sparkles" style="width:13px;height:13px"></i>Konfiguration</div>
+        <h1 class="page-h1">Einstellungen</h1>
+        <div class="set-layout">
+          <div>
+            <div class="set-card">
+              <div class="set-card-hd">
+                <div class="set-card-title"><i data-lucide="user" style="width:15px;height:15px"></i>Mein Profil</div>
+              </div>
+              <div class="set-body">
+                <div class="fg fg1">
+                  <div class="fw"><span class="fl">Mein Name (für Offerten-Signatur)</span><input class="fi" id="set-uname" placeholder="z. B. Alexander Meier" oninput="liveUser()"></div>
+                </div>
+              </div>
+            </div>
+            <div class="set-card">
+              <div class="set-card-hd">
+                <div class="set-card-title"><i data-lucide="building-2" style="width:15px;height:15px"></i>Firmenangaben</div>
+              </div>
+              <div class="set-body">
+                <div class="fg" style="margin-bottom:11px">
+                  <div class="fw"><span class="fl">Firmenname</span><input class="fi" id="set-name" placeholder="PROPOSAL SWISS"></div>
+                  <div class="fw"><span class="fl">UID-Nummer</span><input class="fi" id="set-uid" placeholder="CHE-123.456.789"></div>
+                </div>
+                <div class="fg" style="margin-bottom:11px">
+                  <div class="fw"><span class="fl">Gerichtsstand</span><input class="fi" id="set-ort" placeholder="Zürich"></div>
+                  <div class="fw"><span class="fl">E-Mail</span><input class="fi" id="set-email" placeholder="info@proposal.ch"></div>
+                </div>
+                <div class="fg fg1">
+                  <div class="fw"><span class="fl">Adresse</span><input class="fi" id="set-adr" placeholder="Bahnhofstrasse 1, 8001 Zürich"></div>
+                </div>
+              </div>
+            </div>
+            <div class="set-card">
+              <div class="set-card-hd">
+                <div class="set-card-title"><i data-lucide="percent" style="width:15px;height:15px"></i>Konditionen &amp; Steuern</div>
+              </div>
+              <div class="set-body">
+                <div class="fg fg3">
+                  <div class="fw"><span class="fl">MwSt.-Satz (%)</span><input class="fi" id="set-mwst" type="number" placeholder="8.1"></div>
+                  <div class="fw"><span class="fl">Zahlungsfrist (Tage)</span><input class="fi" id="set-zfrist" type="number" placeholder="30"></div>
+                  <div class="fw"><span class="fl">Gültigkeit (Tage)</span><input class="fi" id="set-guelt" type="number" placeholder="60"></div>
+                </div>
+              </div>
+            </div>
+            <div class="set-card">
+              <div class="set-card-hd">
+                <div class="set-card-title"><i data-lucide="book-open" style="width:15px;height:15px"></i>Schweizer Korrektheits-Regelwerk</div>
+                <span class="badge-on">5 REGELN AKTIV</span>
+              </div>
+              <div>
+                <div class="rule-item">
+                  <button class="rule-toggle" onclick="toggleRule('r1')"><span class="rule-id e">BK-1</span><span class="rule-name">Eszett-Verbot (ß → ss)</span><i data-lucide="chevron-right" class="rule-chev" id="rc-r1" style="width:14px;height:14px"></i></button>
+                  <div class="rule-body" id="rb-r1"><p class="rule-desc">Das Schweizer Schriftdeutsch verzichtet vollständig auf «ß».</p><div class="ex-grid"><div class="ex-card"><div class="ex-lbl w"><i data-lucide="x" style="width:10px;height:10px"></i>Falsch</div><div class="ex-txt">weiß, daß, Straße</div></div><div class="ex-card"><div class="ex-lbl r"><i data-lucide="check" style="width:10px;height:10px"></i>Richtig</div><div class="ex-txt">weiss, dass, Strasse</div></div></div></div>
+                </div>
+                <div class="rule-item">
+                  <button class="rule-toggle" onclick="toggleRule('r2')"><span class="rule-id e">BK-2</span><span class="rule-name">Anrede-Konsistenz</span><i data-lucide="chevron-right" class="rule-chev" id="rc-r2" style="width:14px;height:14px"></i></button>
+                  <div class="rule-body" id="rb-r2"><p class="rule-desc">Klassisch (Komma + klein) oder modern SN 010130 (kein Zeichen + gross). Mischformen sind ein Fehler.</p><div class="ex-grid"><div class="ex-card"><div class="ex-lbl w"><i data-lucide="x" style="width:10px;height:10px"></i>Mischform</div><div class="ex-txt">Sehr geehrte Frau M.,&#10;Wir danken…</div></div><div class="ex-card"><div class="ex-lbl r"><i data-lucide="check" style="width:10px;height:10px"></i>Korrekt</div><div class="ex-txt">Sehr geehrte Frau M.,&#10;wir danken…</div></div></div></div>
+                </div>
+                <div class="rule-item">
+                  <button class="rule-toggle" onclick="toggleRule('r3')"><span class="rule-id w">BK-3</span><span class="rule-name">Datumsformat TT.MM.JJJJ</span><i data-lucide="chevron-right" class="rule-chev" id="rc-r3" style="width:14px;height:14px"></i></button>
+                  <div class="rule-body" id="rb-r3"><p class="rule-desc">Schweizer Norm: TT.MM.JJJJ — kein ISO-Format.</p><div class="ex-grid"><div class="ex-card"><div class="ex-lbl w"><i data-lucide="x" style="width:10px;height:10px"></i>Falsch</div><div class="ex-txt">2026-05-09</div></div><div class="ex-card"><div class="ex-lbl r"><i data-lucide="check" style="width:10px;height:10px"></i>Richtig</div><div class="ex-txt">09.05.2026</div></div></div></div>
+                </div>
+                <div class="rule-item">
+                  <button class="rule-toggle" onclick="toggleRule('r4')"><span class="rule-id e">BK-4</span><span class="rule-name">Beträge CHF (Apostroph)</span><i data-lucide="chevron-right" class="rule-chev" id="rc-r4" style="width:14px;height:14px"></i></button>
+                  <div class="rule-body" id="rb-r4"><p class="rule-desc">Apostroph als Tausendertrenner, Punkt als Dezimaltrenner. CHF vor dem Betrag.</p><div class="ex-grid"><div class="ex-card"><div class="ex-lbl w"><i data-lucide="x" style="width:10px;height:10px"></i>Falsch</div><div class="ex-txt">1.234,50 CHF</div></div><div class="ex-card"><div class="ex-lbl r"><i data-lucide="check" style="width:10px;height:10px"></i>Richtig</div><div class="ex-txt">CHF 1'234.50</div></div></div></div>
+                </div>
+                <div class="rule-item">
+                  <button class="rule-toggle" onclick="toggleRule('r5')"><span class="rule-id i">BK-5</span><span class="rule-name">Helvetismen bevorzugen</span><i data-lucide="chevron-right" class="rule-chev" id="rc-r5" style="width:14px;height:14px"></i></button>
+                  <div class="rule-body" id="rb-r5"><p class="rule-desc">Offerte statt Angebot, Vorkommnis statt Ereignis, parkieren statt parken.</p><div class="ex-grid"><div class="ex-card"><div class="ex-lbl w"><i data-lucide="x" style="width:10px;height:10px"></i>Bundesdeutsch</div><div class="ex-txt">Angebot / Ereignisse</div></div><div class="ex-card"><div class="ex-lbl r"><i data-lucide="check" style="width:10px;height:10px"></i>Schweizer HD</div><div class="ex-txt">Offerte / Vorkommnisse</div></div></div></div>
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()"><i data-lucide="save" style="width:13px;height:13px"></i>Einstellungen speichern</button>
+          </div>
+          <div>
+            <div class="sys-box">
+              <div class="sys-tag"><i data-lucide="sparkles" style="width:12px;height:12px"></i>System-Prompt</div>
+              <div class="sys-h">KI-Anweisung Schweizer Hochdeutsch</div>
+              <div class="sys-pre"># CHECKLISTE PRO GENERIERUNG
+# Schweizerische Bundeskanzlei
+
+[BK-1] ESZETT
+  «ß» → «ss» (immer)
+
+[BK-2] ANREDE
+  A: Komma + klein
+  B: kein Zeichen + gross
+  Mischformen: geblockt
+
+[BK-3] DATUM → TT.MM.JJJJ
+
+[BK-4] BETRÄGE
+  CHF 1'234.50
+  Apostroph = Tausender
+  Punkt = Dezimal
+
+[BK-5] HELVETISMEN
+  Offerte ≠ Angebot
+  Vorkommnis ≠ Ereignis
+
+# STATUS: BK-KONFORM ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ═══ MODAL: NEUE OFFERTE ═══ -->
+<div class="modal-bg" id="modal-neue" onclick="bgClose(event,'modal-neue')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">Neue Offerte erstellen</div>
+      <button class="modal-close" onclick="closeModal('modal-neue')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="fr"><label class="flb">Kundenname *</label><input class="fin" id="n-kunde" placeholder="z. B. Müller &amp; Partner AG"></div>
+      <div class="fr"><label class="flb">Projekttitel</label><input class="fin" id="n-titel" placeholder="z. B. DSG-konforme Mandantenplattform"></div>
+      <div class="fr"><label class="flb">Projektbeschrieb</label><textarea class="fin" id="n-desc" rows="3" placeholder="Kurze Beschreibung des Projekts…" style="resize:vertical"></textarea></div>
+      <div class="fr"><label class="flb">Budget</label>
+        <div class="pfx-wrap"><span class="pfx">CHF</span><input type="number" id="n-budget" placeholder="148000"></div>
+      </div>
+      <div class="fr">
+        <label class="flb" style="margin-bottom:8px">Tonalität</label>
+        <div class="tone-grid">
+          <button class="tone-opt sel" id="t-k" onclick="selTone('konservativ')"><div class="tone-name">Konservativ</div><div class="tone-sub">Bankwesen · formell</div></button>
+          <button class="tone-opt" id="t-m" onclick="selTone('modern')"><div class="tone-name">Modern</div><div class="tone-sub">Agentur · direkt</div></button>
+          <button class="tone-opt" id="t-p" onclick="selTone('praezise')"><div class="tone-name">Präzise</div><div class="tone-sub">Ingenieur · technisch</div></button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-neue')">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveOfferte()"><i data-lucide="save" style="width:13px;height:13px"></i>Offerte speichern</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: VORSCHAU ═══ -->
+<div class="modal-bg" id="modal-preview" onclick="bgClose(event,'modal-preview')">
+  <div class="modal modal-wide">
+    <div class="modal-hd">
+      <div class="modal-title" id="preview-title">Offerten-Vorschau</div>
+      <button class="modal-close" onclick="closeModal('modal-preview')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="comp-row">
+        <div class="bk-pill"><i data-lucide="shield-check" style="width:14px;height:14px"></i>BK-KONFORM · Schreibweisungen BK aktiv</div>
+        <button class="btn btn-primary btn-sm" onclick="printOfferte()"><i data-lucide="printer" style="width:13px;height:13px"></i>Drucken / Als PDF speichern</button>
+      </div>
+      <div class="doc-preview">
+        <div class="doc-gold-bar"></div>
+        <div class="doc-body" id="doc-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: PROFIL ═══ -->
+<div class="modal-bg" id="modal-profil" onclick="bgClose(event,'modal-profil')">
+  <div class="modal modal-narrow">
+    <div class="modal-hd">
+      <div class="modal-title">Profil bearbeiten</div>
+      <button class="modal-close" onclick="closeModal('modal-profil')"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="profil-av" id="profil-av">PS</div>
+      <div class="fr"><label class="flb">Mein Name (Signatur auf Offerten)</label><input class="fin" id="p-uname" placeholder="z. B. Alexander Meier"></div>
+      <div class="fr"><label class="flb">Firmenname</label><input class="fin" id="p-firm" placeholder="PROPOSAL SWISS"></div>
+      <div class="fr"><label class="flb">E-Mail</label><input class="fin" id="p-email" placeholder="info@proposal.ch"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-profil')">Abbrechen</button>
+      <button class="btn btn-primary" onclick="saveProfil()"><i data-lucide="save" style="width:13px;height:13px"></i>Speichern</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i data-lucide="check-circle" style="width:16px;height:16px"></i><span id="toast-msg">Gespeichert</span></div>
+
+<script>
+/* ══ ICONS ══ */
+function R() { if (window.lucide) lucide.createIcons(); }
+
+/* ══ CHF FORMAT ══ */
+function chf(n) {
+  const num = parseFloat(n) || 0;
+  const [ip, dp] = num.toFixed(2).split('.');
+  let f = '', c = 0;
+  for (let i = ip.length - 1; i >= 0; i--) {
+    if (c > 0 && c % 3 === 0) f = "'" + f;
+    f = ip[i] + f; c++;
+  }
+  return f + '.' + dp;
+}
+
+/* ══ HELPERS ══ */
+function today() {
+  return new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function genRef() {
+  return 'OFF-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 9000 + 1000);
+}
+function initials(s) {
+  if (!s) return 'PS';
+  return s.split(/[\s|·\-]+/).filter(Boolean).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+function badgeHTML(st) {
+  const m = {Entwurf:'b-e',Versendet:'b-v',Verhandlung:'b-n',Angenommen:'b-a',Abgelehnt:'b-x'};
+  return '<span class="badge ' + (m[st]||'b-e') + '">' + st + '</span>';
+}
+
+/* ══ STATE ══ */
+let S = {
+  offerten: [],
+  firma: {
+    name:'PROPOSAL SWISS', uid:'CHE-123.456.789',
+    ort:'Zürich', adr:'Bahnhofstrasse 1, 8001 Zürich',
+    email:'info@proposal.ch', mwst:'8.1', zfrist:'30', guelt:'60'
+  },
+  userName: '',  // Dynamisch — gespeichert in localStorage unter 'ps_userName'
+  searchQ: ''
+};
+
+// userName wird separat gespeichert (persönlich, nicht Firmendaten)
+function loadState() {
+  try {
+    const raw = localStorage.getItem('ps_data');
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d.offerten) S.offerten = d.offerten;
+      if (d.firma) Object.assign(S.firma, d.firma);
+    }
+    // Name persönlich, unter eigenem Key
+    S.userName = localStorage.getItem('ps_userName') || '';
+  } catch(e) {}
+}
+function saveState() {
+  try {
+    localStorage.setItem('ps_data', JSON.stringify({offerten:S.offerten, firma:S.firma}));
+    localStorage.setItem('ps_userName', S.userName);
+  } catch(e) {}
+}
+
+/* ══ LOGIN / NAME SETUP / LOGOUT ══ */
+function doLogin() {
+  const pw = document.getElementById('l-pw').value;
+  const err = document.getElementById('l-err');
+  if (pw === 'demo123') {
+    // Hide login
+    const ls = document.getElementById('login-screen');
+    ls.classList.add('out');
+    setTimeout(() => { ls.style.display = 'none'; }, 460);
+    // Check if name is set
+    if (!S.userName) {
+      setTimeout(() => {
+        document.getElementById('name-setup').classList.add('open');
+        setTimeout(() => { document.getElementById('ns-input').focus(); R(); }, 50);
+      }, 200);
+    } else {
+      onLoginComplete();
+    }
+  } else {
+    err.textContent = 'Falsches Passwort — bitte erneut versuchen.';
+    document.getElementById('l-pw').value = '';
+    document.getElementById('l-pw').focus();
+    setTimeout(() => { err.textContent = ''; }, 3500);
+  }
+}
+
+function nsStep1Next() {
+  const v = document.getElementById('ns-name-input').value.trim();
+  if (!v) { document.getElementById('ns-name-input').focus(); return; }
+  S.userName = v;
+  // Show step 2
+  document.getElementById('ns-step1').style.display = 'none';
+  document.getElementById('ns-step2').style.display = 'block';
+  setTimeout(() => { document.getElementById('ns-firm-input').focus(); R(); }, 50);
+}
+function nsBack() {
+  document.getElementById('ns-step2').style.display = 'none';
+  document.getElementById('ns-step1').style.display = 'block';
+  setTimeout(() => { document.getElementById('ns-name-input').focus(); }, 50);
+}
+function nsStep2Finish() {
+  const firm = document.getElementById('ns-firm-input').value.trim();
+  if (firm) S.firma.name = firm;
+  saveState();
+  document.getElementById('name-setup').classList.remove('open');
+  // Reset wizard for next time
+  document.getElementById('ns-step1').style.display = 'block';
+  document.getElementById('ns-step2').style.display = 'none';
+  onLoginComplete();
+}
+// Legacy alias
+function saveUserName() { nsStep1Next(); }
+
+function onLoginComplete() {
+  updateSidebarUser();
+  renderDash();
+  R();
+}
+
+function doLogout() {
+  closeUserMenu();
+  // Show login again
+  const ls = document.getElementById('login-screen');
+  ls.style.display = 'flex';
+  ls.style.opacity = '0';
+  ls.classList.remove('out');
+  requestAnimationFrame(() => { ls.style.opacity = '1'; });
+  // Clear form
+  document.getElementById('l-pw').value = '';
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-err').textContent = '';
+  R();
+}
+
+/* ══ TOAST ══ */
+function toast(msg) {
+  const el = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ══ NAVIGATION ══ */
+function setView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const v = document.getElementById('view-' + id);
+  if (v) v.classList.add('active');
+  if (btn) btn.classList.add('active');
+  else { const nb = document.querySelector('[data-view="' + id + '"]'); if (nb) nb.classList.add('active'); }
+  if (id === 'dashboard') renderDash();
+  if (id === 'offerten') renderOfferten();
+  if (id === 'einstellungen') loadSettings();
+  setTimeout(R, 40);
+}
+
+/* ══ SIDEBAR USER ══ */
+function updateSidebarUser() {
+  const name = S.userName || '—';
+  document.getElementById('sb-uname').textContent = name.length > 20 ? name.slice(0, 18) + '…' : name;
+  document.getElementById('sb-av').textContent = initials(S.userName);
+  document.getElementById('dash-greet').textContent = 'Guten Tag, ' + (S.userName || 'zusammen') + '.';
+  // Show firm name in sidebar logo
+  const brandEl = document.getElementById('sb-brand');
+  if (brandEl) brandEl.textContent = S.firma.name || 'PROPOSAL SWISS';
+}
+
+/* ══ TONES ══ */
+const TONES = {
+  konservativ: {
+    label:'Konservativ · Bankwesen',
+    sal:'Sehr geehrte Damen und Herren',
+    intro: k => 'Wir bedanken uns für das entgegengebrachte Vertrauen und unterbreiten der ' + k + ' hiermit unsere unverbindliche Offerte. Unser Haus pflegt eine langjährige Tradition in der Begleitung anspruchsvoller Mandate und legt grössten Wert auf Diskretion, Präzision und nachhaltige Wertschöpfung.',
+    vt:'Mehrwert für Ihr Haus',
+    vals:['Mandatsbetreuung durch einen festen Ansprechpartner mit mindestens zwölf Jahren Branchenerfahrung.','Höchste Vertraulichkeit gemäss revDSG — Daten ausschliesslich auf Servern in der Schweiz.','Quartalsweise Lenkungsausschuss-Sitzungen mit dokumentierter Protokollführung.'],
+    cl:'Wir verbleiben mit dem Ausdruck unserer vorzüglichen Hochachtung und stehen für ein vertiefendes Gespräch jederzeit gerne zur Verfügung.'
+  },
+  modern: {
+    label:'Modern · Agentur',
+    sal:'Liebes Team',
+    intro: k => 'Vielen Dank für das spannende Briefing — dies ist kein Standard-Anschreiben, sondern ein konkreter Plan für die ' + k + '.',
+    vt:'Warum wir der richtige Partner sind',
+    vals:['Ein dediziertes Senior-Team — keine Junior-Praktikanten, keine Subunternehmer aus Übersee.','Zweiwöchige Sprints mit transparentem Fortschritt und wöchentlichen Demos statt Status-Folien.','Erfolgsbeteiligung möglich: Honorar teilweise an klar definierte KPIs gekoppelt.'],
+    cl:'Wir freuen uns darauf, gemeinsam zu starten — eine kurze Rückmeldung genügt.'
+  },
+  praezise: {
+    label:'Präzise · Ingenieur',
+    sal:'Sehr geehrte Damen und Herren',
+    intro: k => 'Nachfolgend erhalten Sie unsere technische Offerte für das Vorhaben der ' + k + '. Aufwände wurden auf Basis von 14 Referenzprojekten kalkuliert, inklusive 12 % Risikoaufschlag.',
+    vt:'Technische Eckwerte',
+    vals:['Architektur gemäss ISO/IEC 25010 — dokumentiert in C4-Notation, vollständig versioniert.','Code-Coverage ≥ 85 % (Unit + Integration), CI/CD via GitLab, Infrastructure-as-Code mit Terraform.','SLA 99.9 %, RTO ≤ 4 h, RPO ≤ 1 h — ISO-27001-zertifiziertes Rechenzentrum, FINMA-konform.'],
+    cl:'Für Rückfragen zur Methodik oder den Kalkulationsgrundlagen stehen wir Ihnen gerne zur Verfügung.'
+  }
+};
+
+const TEMPLATES = {
+  anwalt:   {kunde:'Sutter & Brunner Rechtsanwälte AG',titel:'DSG-konforme Mandantenakten-Plattform',desc:'Konzeption und Entwicklung einer datenschutzkonformen Plattform für elektronische Mandantenakten, inkl. sicherem Dokumentenaustausch, elektronischer Signatur und revisionssicherem Archiv nach revDSG.',budget:'148000'},
+  vermoegen:{kunde:'Helvetia Asset Management AG',titel:'Client-Portal für UHNWI',desc:'Design und Implementierung eines personalisierten Wealth-Dashboards für Ultra-High-Net-Worth Individuals: Portfolio-Übersicht, Reporting, Steuerdokumente — FINMA-konform.',budget:'320000'},
+  industrie:{kunde:'Bührle Industries Holding AG',titel:'ERP-Migration & IIoT-Anbindung',desc:'Migration von Legacy-ERP auf cloudbasierte Plattform sowie Integration von IIoT-Sensordaten für Echtzeit-Produktionsmonitoring und Predictive Maintenance.',budget:'215000'},
+  banking:  {kunde:'Zürcher Privatbank AG',titel:'Mobile Banking App — Private Clients',desc:'Native iOS/Android App für Private-Banking-Kunden: Kontoübersicht, Devisenhandel, sichere Kommunikation, biometrische Authentifizierung.',budget:'480000'},
+  beratung: {kunde:'Zwingli Treuhand AG',titel:'Strategische Neuausrichtung — Phase 1',desc:'Strukturierter Strategieprozess: Marktscan, Wettbewerbsanalyse, Szenarioplanung und Ableitung strategischer Stossrichtungen inkl. Umsetzungs-Roadmap.',budget:'89000'},
+  health:   {kunde:'Privatklinik Bellevue AG',titel:'Patientenportal — eHealth-Suisse',desc:'Webbasiertes Portal für Patienten: Online-Terminbuchung, digitale Unterlagen, Befundabruf, verschlüsselter Arzt-Patienten-Chat — konform mit eHealth-Suisse.',budget:'167000'}
+};
+
+/* ══ DASHBOARD ══ */
+function renderDash() {
+  const o = S.offerten;
+  const vol = o.reduce((s, x) => s + (parseFloat(x.budget)||0), 0);
+  const entwurf = o.filter(x => x.status === 'Entwurf').length;
+  document.getElementById('dash-greet').textContent = 'Guten Tag, ' + (S.userName || 'zusammen') + '.';
+  document.getElementById('dash-sub').textContent = entwurf + ' Entwürf' + (entwurf===1?'':'e') + ' warten auf Freigabe.';
+  document.getElementById('s-aktiv').textContent = o.filter(x => x.status !== 'Abgelehnt').length;
+  document.getElementById('s-vol').textContent = o.length ? 'CHF ' + chf(vol) : '—';
+  document.getElementById('s-ang').textContent = o.filter(x => x.status === 'Angenommen').length;
+  document.getElementById('s-avg').textContent = o.length ? 'CHF ' + chf(vol / o.length) : '—';
+  const tbody = document.getElementById('dash-tbody');
+  const tbl = document.getElementById('dash-tbl');
+  const empty = document.getElementById('dash-empty');
+  if (o.length === 0) { tbl.style.display='none'; empty.style.display='block'; }
+  else {
+    tbl.style.display=''; empty.style.display='none';
+    tbody.innerHTML = o.slice(0,6).map(x => `
+      <tr>
+        <td style="font-family:monospace;color:var(--gold)">${x.ref}</td>
+        <td style="font-weight:500">${x.kunde}</td>
+        <td style="color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.titel||'—'}</td>
+        <td>${badgeHTML(x.status)}</td>
+        <td style="text-align:right;font-family:monospace">${chf(x.budget)}</td>
+        <td style="text-align:right"><button class="btn btn-ghost" onclick="openPreview(${x.id})" style="font-size:11px">
+          <i data-lucide="eye" style="width:12px;height:12px"></i>Ansicht</button></td>
+      </tr>`).join('');
+  }
+  document.getElementById('nav-badge').textContent = o.filter(x => x.status !== 'Abgelehnt').length;
+  setTimeout(R, 20);
+}
+
+/* ══ OFFERTEN LIST ══ */
+function renderOfferten() {
+  const q = S.searchQ.toLowerCase();
+  const filtered = S.offerten.filter(o => !q || o.kunde.toLowerCase().includes(q) || o.ref.toLowerCase().includes(q) || (o.titel||'').toLowerCase().includes(q));
+  document.getElementById('off-cnt').textContent = '(' + filtered.length + ')';
+  document.getElementById('srch-info').textContent = q ? 'Suche nach «' + S.searchQ + '» — ' + filtered.length + ' Treffer' : '';
+  const list = document.getElementById('off-list');
+  const empty = document.getElementById('off-empty');
+  if (filtered.length === 0) {
+    list.innerHTML = ''; empty.style.display = 'block';
+    document.getElementById('empty-msg').textContent = S.offerten.length === 0 ? 'Erstellen Sie Ihre erste Offerte.' : 'Keine Treffer für «' + S.searchQ + '».';
+  } else {
+    empty.style.display = 'none';
+    const ST = ['Entwurf','Versendet','Verhandlung','Angenommen','Abgelehnt'];
+    list.innerHTML = filtered.map(o => `
+      <div class="off-row">
+        <div class="off-info">
+          <div class="off-meta"><span class="off-ref">${o.ref}</span>${badgeHTML(o.status)}<span class="off-date">${o.datum||''}</span></div>
+          <div class="off-kunde">${o.kunde}</div>
+          <div class="off-titel">${o.titel||'—'}</div>
+        </div>
+        <div class="off-amt">
+          <strong>CHF ${chf(o.budget)}</strong>
+          <small>${(TONES[o.tone]||{}).label||'—'}</small>
+        </div>
+        <div class="off-actions">
+          <button class="icon-btn" onclick="openPreview(${o.id})" title="Vorschau"><i data-lucide="eye" style="width:14px;height:14px"></i></button>
+          <select class="status-sel" onchange="updStatus(${o.id},this.value)">
+            ${ST.map(s=>'<option'+(s===o.status?' selected':'')+'>'+s+'</option>').join('')}
+          </select>
+          <button class="icon-btn del" onclick="delOff(${o.id})" title="Löschen"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+        </div>
+      </div>`).join('');
+  }
+  document.getElementById('nav-badge').textContent = S.offerten.filter(x => x.status !== 'Abgelehnt').length;
+  setTimeout(R, 20);
+}
+
+function updStatus(id, status) {
+  const o = S.offerten.find(x => x.id === id);
+  if (o) { o.status = status; saveState(); renderDash(); }
+}
+function delOff(id) {
+  if (!confirm('Offerte wirklich löschen?')) return;
+  S.offerten = S.offerten.filter(x => x.id !== id);
+  saveState(); renderOfferten(); renderDash();
+}
+function onSearch(q) {
+  S.searchQ = q;
+  setView('offerten', document.querySelector('[data-view="offerten"]'));
+}
+
+/* ══ TONE ══ */
+let toneVal = 'konservativ';
+function selTone(t) {
+  toneVal = t;
+  ['k','m','p'].forEach(id => document.getElementById('t-'+id).classList.remove('sel'));
+  const map = {konservativ:'k',modern:'m',praezise:'p'};
+  document.getElementById('t-' + map[t]).classList.add('sel');
+}
+
+/* ══ NEUE OFFERTE ══ */
+function openNeue(pre) {
+  toneVal='konservativ'; selTone('konservativ');
+  document.getElementById('n-kunde').value  = (pre&&pre.kunde) ||'';
+  document.getElementById('n-titel').value  = (pre&&pre.titel) ||'';
+  document.getElementById('n-desc').value   = (pre&&pre.desc)  ||'';
+  document.getElementById('n-budget').value = (pre&&pre.budget)||'';
+  openModal('modal-neue');
+}
+function saveOfferte() {
+  const kunde = document.getElementById('n-kunde').value.trim();
+  if (!kunde) { document.getElementById('n-kunde').focus(); return; }
+  const o = {
+    id:Date.now(), ref:genRef(), kunde,
+    titel:document.getElementById('n-titel').value.trim()||'Offerte',
+    desc:document.getElementById('n-desc').value.trim(),
+    budget:document.getElementById('n-budget').value,
+    tone:toneVal, status:'Entwurf', datum:today(),
+    autor:S.userName  // Speichert den Ersteller
+  };
+  S.offerten.unshift(o); saveState();
+  closeModal('modal-neue');
+  setView('offerten', document.querySelector('[data-view="offerten"]'));
+  toast('Offerte «' + o.ref + '» gespeichert');
+}
+function openTemplate(key) { const t=TEMPLATES[key]; if(t) openNeue(t); }
+
+/* ══ PREVIEW & PRINT ══ */
+let printTarget = null;
+
+function openPreview(id) {
+  const o = S.offerten.find(x => x.id === id);
+  if (!o) return;
+  printTarget = o;
+  const t = TONES[o.tone]||TONES.konservativ;
+  const bud = parseFloat(o.budget)||0;
+  const mwstPct = parseFloat(S.firma.mwst)||8.1;
+  const mwst = bud * mwstPct / 100;
+  const total = bud + mwst;
+  // Signatur: Ersteller oder aktueller Nutzer
+  const sigName = o.autor || S.userName || 'Proposal Swiss';
+  document.getElementById('preview-title').textContent = 'Vorschau: ' + o.ref;
+  document.getElementById('doc-body').innerHTML = buildPreview(o, t, bud, mwst, total, mwstPct, sigName);
+  openModal('modal-preview'); setTimeout(R, 30);
+}
+
+function buildPreview(o, t, bud, mwst, total, mwstPct, sigName) {
+  return `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:28px;height:28px;background:linear-gradient(135deg,#A48454,#C9A877);border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:700;color:#0F172A">PS</div>
+        <div>
+          <div style="font-size:12px;font-weight:600;letter-spacing:0.14em;color:#0F172A">${S.firma.name||'PROPOSAL SWISS'}</div>
+          <div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454">Zürich · Schweiz</div>
+        </div>
+      </div>
+      <div style="text-align:right;font-size:10px">
+        <div style="font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:#A48454;margin-bottom:2px">Referenz</div>
+        <div style="font-family:monospace;font-weight:500;color:#0F172A">${o.ref}</div>
+        <div style="font-size:7px;letter-spacing:0.22em;text-transform:uppercase;color:#A48454;margin:6px 0 2px">Datum</div>
+        <div style="color:#0F172A">${o.datum}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454;margin-bottom:4px">Adressat</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:#0F172A;margin-bottom:2px">${o.kunde}</div>
+      <div style="font-size:10px;color:rgba(15,23,42,0.6)">${S.firma.adr||'Zürich, Schweiz'}</div>
+    </div>
+    <div style="margin-bottom:22px">
+      <div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454;margin-bottom:6px">Gegenstand</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:#0F172A;line-height:1.2">${o.titel}</div>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(164,132,84,0.35),transparent);margin:12px 0"></div>
+    </div>
+    <div style="margin-bottom:24px">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:12px;font-weight:500;color:#0F172A;margin-bottom:8px">${t.sal}</p>
+      <p style="font-size:10.5px;line-height:1.75;color:rgba(15,23,42,0.8)">${t.intro(o.kunde)}</p>
+    </div>
+    ${o.desc?`<div style="margin-bottom:24px"><div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454;margin-bottom:6px">I · Projektbeschrieb</div><p style="font-size:10.5px;line-height:1.75;color:rgba(15,23,42,0.8)">${o.desc}</p></div>`:''}
+    <div style="margin-bottom:24px">
+      <div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454;margin-bottom:8px">II · ${t.vt}</div>
+      ${t.vals.map(v=>`<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:7px"><div style="width:4px;height:4px;background:#A48454;transform:rotate(45deg);flex-shrink:0;margin-top:7px"></div><p style="font-size:10.5px;line-height:1.7;color:rgba(15,23,42,0.8);margin:0">${v}</p></div>`).join('')}
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:7px;letter-spacing:0.25em;text-transform:uppercase;color:#A48454;margin-bottom:8px">III · Honorar</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><td style="padding:6px 0;font-size:10.5px;color:rgba(15,23,42,0.78);border-bottom:1px solid rgba(15,23,42,0.08)">Pauschalhonorar gemäss Leistungsverzeichnis</td><td style="padding:6px 0;text-align:right;font-family:monospace;font-size:10.5px;color:#0F172A;border-bottom:1px solid rgba(15,23,42,0.08)">CHF ${chf(bud)}</td></tr>
+        <tr><td style="padding:6px 0;font-size:10.5px;color:rgba(15,23,42,0.78);border-bottom:1px solid rgba(15,23,42,0.08)">Mehrwertsteuer (${mwstPct} %)</td><td style="padding:6px 0;text-align:right;font-family:monospace;font-size:10.5px;color:#0F172A;border-bottom:1px solid rgba(15,23,42,0.08)">CHF ${chf(mwst)}</td></tr>
+        <tr><td style="padding:8px 0;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:600;color:#0F172A">Gesamtbetrag</td><td style="padding:8px 0;text-align:right;font-family:monospace;font-size:13px;font-weight:700;color:#A48454">CHF ${chf(total)}</td></tr>
+      </table>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px">
+        ${[['Zahlungsfrist','30 Tage netto'],['Gerichtsstand',S.firma.ort||'Zürich'],['Gültigkeit','60 Tage']].map(([l,v])=>`<div><div style="font-size:7px;letter-spacing:.22em;text-transform:uppercase;color:#A48454;margin-bottom:3px">${l}</div><div style="font-size:10px;font-weight:500;color:#0F172A">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <p style="font-size:10.5px;line-height:1.75;color:rgba(15,23,42,0.8);margin-bottom:20px">${t.cl}</p>
+    <div style="margin-bottom:6px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;font-weight:500;color:#0F172A">Freundliche Grüsse<br>${sigName}</div>
+      <div style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(15,23,42,0.45);margin-top:3px">${S.firma.name||'PROPOSAL SWISS'}</div>
+    </div>
+    <div style="padding-top:10px;border-top:1px solid rgba(15,23,42,0.07);font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:rgba(15,23,42,0.38);text-align:center">
+      ${S.firma.adr||'Zürich'} · UID ${S.firma.uid||'CHE-XXX.XXX.XXX'} · ${S.firma.email||''}
+    </div>`;
+}
+
+/* ══ PRINT ══ */
+function printOfferte() {
+  if (!printTarget) return;
+  const o = printTarget;
+  const t = TONES[o.tone] || TONES.konservativ;
+  const bud = parseFloat(o.budget) || 0;
+  const mwstPct = parseFloat(S.firma.mwst) || 8.1;
+  const mwst = bud * mwstPct / 100;
+  const total = bud + mwst;
+  const sigName = o.autor || S.userName || S.firma.name || 'Proposal Swiss';
+  const firmName = S.firma.name || 'PROPOSAL SWISS';
+  const firmAdr  = S.firma.adr  || 'Zürich, Schweiz';
+  const firmUID  = S.firma.uid  || 'CHE-XXX.XXX.XXX';
+  const firmOrt  = S.firma.ort  || 'Zürich';
+  const firmEmail = S.firma.email || '';
+
+  const w = window.open('', '_blank', 'width=960,height=800');
+  w.document.write(`<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>${o.ref} \u2014 ${o.kunde}</title>
+<style>
+/* ── FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── BASE ── */
+:root {
+  --gold:   #A48454;
+  --night:  #0F172A;
+  --ink:    #1E293B;
+  --ink2:   #475569;
+  --ink3:   #94A3B8;
+  --border: #E2E8F0;
+  --bg-subtle: #F8FAFC;
+  --total-bg: #F0F4FF;
+  --total-color: #1D3A8A;
+}
+
+html, body {
+  font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 10pt;
+  line-height: 1.6;
+  color: var(--night);
+  background: #fff;
+}
+
+/* ── PAGE ── */
+@page {
+  size: A4;
+  margin: 18mm 22mm 22mm 22mm;
+}
+@media print {
+  html, body { background: #fff; }
+  .no-print { display: none !important; }
+}
+@media screen {
+  body {
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 18mm 22mm 22mm;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    min-height: 297mm;
+  }
+}
+
+/* ── COLOR ACCENT STRIP ── */
+.accent-strip {
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold) 0%, #C9A877 50%, var(--gold) 100%);
+  margin-bottom: 10mm;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* ── HEADER ── */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12mm;
+  padding-bottom: 8mm;
+  border-bottom: 1px solid var(--border);
+}
+.header-left { display: flex; align-items: center; gap: 10pt; }
+.logo-mark {
+  width: 36pt; height: 36pt; border-radius: 5pt;
+  background: linear-gradient(135deg, var(--gold) 0%, #C9A877 100%);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.logo-mark span {
+  font-size: 13pt; font-weight: 700; color: var(--night);
+  letter-spacing: 0.1em;
+}
+.firm-name {
+  font-size: 13pt; font-weight: 600; color: var(--night);
+  letter-spacing: 0.05em; line-height: 1.2;
+  margin-bottom: 2pt;
+}
+.firm-tagline {
+  font-size: 7pt; letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--gold);
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.header-right { text-align: right; }
+.meta-block { margin-bottom: 5pt; }
+.meta-label {
+  font-size: 6.5pt; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink3);
+  display: block; margin-bottom: 1.5pt;
+}
+.meta-value {
+  font-size: 9.5pt; font-weight: 500; color: var(--night);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── ADDRESS BLOCK (C5 window envelope) ── */
+.address-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14mm;
+}
+.address-block {
+  /* DIN 676 window position: top ~45mm from sheet top, left 20mm */
+  min-height: 30mm;
+}
+.sender-line {
+  font-size: 7pt; color: var(--ink3);
+  border-bottom: 0.5pt solid var(--ink3);
+  padding-bottom: 2pt; margin-bottom: 4pt;
+  display: inline-block;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.recipient-name {
+  font-size: 11.5pt; font-weight: 600; color: var(--night);
+  line-height: 1.3; margin-bottom: 2pt;
+}
+.recipient-sub {
+  font-size: 9pt; color: var(--ink2); line-height: 1.5;
+}
+.subject-block { text-align: right; max-width: 65mm; }
+.subject-label {
+  font-size: 6.5pt; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--ink3);
+  display: block; margin-bottom: 3pt;
+}
+.subject-title {
+  font-size: 9.5pt; font-weight: 500; color: var(--night);
+  line-height: 1.4;
+}
+
+/* ── DOCUMENT TITLE ── */
+.doc-title-block {
+  margin-bottom: 10mm;
+  padding-bottom: 7mm;
+  border-bottom: 1px solid var(--border);
+}
+.doc-title {
+  font-size: 18pt; font-weight: 300; color: var(--night);
+  letter-spacing: -0.02em; line-height: 1.15;
+  margin-bottom: 2mm;
+}
+.doc-title strong { font-weight: 600; }
+.doc-ref-line {
+  font-size: 8pt; color: var(--ink3);
+  display: flex; gap: 14pt; align-items: center;
+}
+.doc-ref-line span { display: flex; align-items: center; gap: 4pt; }
+.dot-sep { color: var(--border); }
+
+/* ── SALUTATION ── */
+.salutation {
+  font-size: 10.5pt; font-weight: 500; color: var(--night);
+  margin-bottom: 4pt; margin-top: 0;
+}
+.intro-para {
+  font-size: 10pt; line-height: 1.65; color: var(--ink2);
+  margin-bottom: 10mm;
+}
+
+/* ── SECTIONS ── */
+.section {
+  margin-bottom: 11mm;
+}
+.section-heading {
+  font-size: 7pt; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 4pt;
+  display: flex; align-items: center; gap: 6pt;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.section-heading::after {
+  content: '';
+  flex: 1;
+  height: 0.5pt;
+  background: var(--border);
+}
+.section-body {
+  font-size: 10pt; line-height: 1.65; color: var(--ink2);
+}
+
+/* ── VALUE LIST ── */
+.value-list { list-style: none; padding: 0; margin: 0; }
+.value-list li {
+  display: flex; align-items: flex-start; gap: 8pt;
+  padding: 5pt 0;
+  border-bottom: 0.5pt solid var(--bg-subtle);
+  font-size: 10pt; line-height: 1.6; color: var(--ink2);
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.value-list li:last-child { border-bottom: none; }
+.vi-marker {
+  width: 5pt; height: 5pt; border-radius: 1pt;
+  background: var(--gold); flex-shrink: 0;
+  margin-top: 5pt;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+
+/* ── HONORAR TABLE ── */
+.fee-table {
+  width: 100%; border-collapse: collapse;
+  margin-top: 2mm; margin-bottom: 4mm;
+}
+.fee-table td {
+  padding: 4.5pt 0;
+  font-size: 10pt; color: var(--ink2);
+  border-bottom: 0.5pt solid var(--border);
+  vertical-align: baseline;
+}
+.fee-table td.amount {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500; color: var(--night);
+  font-size: 10pt;
+  white-space: nowrap;
+}
+.fee-table tr:last-of-type td { border-bottom: none; }
+
+/* TOTAL ROW — subtle highlight box */
+.total-row td {
+  padding: 6pt 10pt !important;
+  background: var(--total-bg) !important;
+  border-bottom: none !important;
+  border-radius: 0;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.total-row { border-radius: 4pt; overflow: hidden; }
+.total-row td:first-child {
+  font-size: 10.5pt; font-weight: 600; color: var(--total-color);
+  border-radius: 4pt 0 0 4pt;
+}
+.total-row td.amount {
+  font-size: 12pt; font-weight: 700; color: var(--total-color);
+  border-radius: 0 4pt 4pt 0;
+}
+/* wrapper to apply border-radius to total row */
+.total-wrap {
+  margin-top: 2mm;
+  border-radius: 5pt;
+  overflow: hidden;
+  background: var(--total-bg);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+.total-inner {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6pt 10pt;
+}
+.total-label {
+  font-size: 10.5pt; font-weight: 600; color: var(--total-color);
+}
+.total-amount {
+  font-size: 12.5pt; font-weight: 700; color: var(--total-color);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ── CONDITIONS ── */
+.conditions-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin-top: 5mm;
+  border: 0.5pt solid var(--border); border-radius: 4pt;
+  overflow: hidden;
+}
+.cond-item {
+  padding: 5pt 8pt;
+  border-right: 0.5pt solid var(--border);
+}
+.cond-item:last-child { border-right: none; }
+.cond-label {
+  font-size: 6.5pt; font-weight: 600; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink3);
+  display: block; margin-bottom: 2pt;
+}
+.cond-value {
+  font-size: 9.5pt; font-weight: 500; color: var(--night);
+}
+
+/* ── CLOSING ── */
+.closing-para {
+  font-size: 10pt; line-height: 1.65; color: var(--ink2);
+  margin-bottom: 12mm;
+}
+
+/* ── SIGNATURE ── */
+.signature-block {
+  margin-bottom: 16mm;
+  padding-left: 0;
+}
+.sig-farewell {
+  font-size: 10pt; color: var(--ink2);
+  margin-bottom: 8mm;
+}
+.sig-line {
+  width: 40mm; height: 0.5pt; background: var(--border);
+  margin-bottom: 3pt;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.sig-name {
+  font-size: 11pt; font-weight: 600; color: var(--night);
+  margin-bottom: 1.5pt;
+}
+.sig-role {
+  font-size: 8pt; color: var(--ink3);
+  letter-spacing: 0.08em;
+}
+
+/* ── FOOTER ── */
+.doc-footer {
+  position: running(footer);
+  margin-top: auto;
+}
+.footer-rule {
+  height: 0.5pt; background: var(--border);
+  margin-bottom: 4pt;
+  print-color-adjust: exact; -webkit-print-color-adjust: exact;
+}
+.footer-content {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-firm {
+  font-size: 7.5pt; font-weight: 500; color: var(--ink3);
+  letter-spacing: 0.04em;
+}
+.footer-meta {
+  font-size: 7pt; color: var(--ink3);
+  letter-spacing: 0.03em; text-align: right;
+}
+.footer-ref {
+  font-size: 7pt; color: var(--ink3); font-variant-numeric: tabular-nums;
+}
+</style>
+</head>
+<body>
+
+<!-- ACCENT STRIP -->
+<div class="accent-strip"></div>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="header-left">
+    <div class="logo-mark"><span>PS</span></div>
+    <div>
+      <div class="firm-name">${firmName}</div>
+      <div class="firm-tagline">Z\u00fcrich &middot; Schweiz</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="meta-block">
+      <span class="meta-label">Offertnummer</span>
+      <div class="meta-value">${o.ref}</div>
+    </div>
+    <div class="meta-block">
+      <span class="meta-label">Datum</span>
+      <div class="meta-value">${o.datum}</div>
+    </div>
+    <div class="meta-block">
+      <span class="meta-label">G\u00fcltigkeit</span>
+      <div class="meta-value">60 Tage</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADDRESS + SUBJECT -->
+<div class="address-section">
+  <div class="address-block">
+    <div class="sender-line">${firmName} &middot; ${firmAdr}</div>
+    <div class="recipient-name">${o.kunde}</div>
+    <div class="recipient-sub">Sehr geehrte Damen und Herren</div>
+  </div>
+  <div class="subject-block">
+    <span class="subject-label">Betreff</span>
+    <div class="subject-title">${o.titel}</div>
+  </div>
+</div>
+
+<!-- DOCUMENT TITLE -->
+<div class="doc-title-block">
+  <h1 class="doc-title">${o.titel}</h1>
+  <div class="doc-ref-line">
+    <span>${o.ref}</span>
+    <span class="dot-sep">&middot;</span>
+    <span>${o.datum}</span>
+    <span class="dot-sep">&middot;</span>
+    <span>${TONES[o.tone] ? TONES[o.tone].label : 'Konservativ'}</span>
+  </div>
+</div>
+
+<!-- SALUTATION + INTRO -->
+<p class="salutation">${t.sal}</p>
+<p class="intro-para">${t.intro(o.kunde)}</p>
+
+${o.desc ? `
+<!-- PROJEKTBESCHRIEB -->
+<div class="section">
+  <div class="section-heading">I&nbsp;&nbsp;Projektbeschrieb</div>
+  <div class="section-body">${o.desc}</div>
+</div>` : ''}
+
+<!-- VALUE PROPOSITION -->
+<div class="section">
+  <div class="section-heading">${o.desc ? 'II' : 'I'}&nbsp;&nbsp;${t.vt}</div>
+  <ul class="value-list">
+    ${t.vals.map(v => `<li><div class="vi-marker"></div><span>${v}</span></li>`).join('')}
+  </ul>
+</div>
+
+<!-- HONORAR -->
+<div class="section">
+  <div class="section-heading">${o.desc ? 'III' : 'II'}&nbsp;&nbsp;Honorar &amp; Konditionen</div>
+
+  <table class="fee-table">
+    <tr>
+      <td>Pauschalhonorar gem\u00e4ss Leistungsverzeichnis</td>
+      <td class="amount">CHF&nbsp;${chf(bud)}</td>
+    </tr>
+    <tr>
+      <td>Mehrwertsteuer (${mwstPct}&thinsp;%)</td>
+      <td class="amount">CHF&nbsp;${chf(mwst)}</td>
+    </tr>
+  </table>
+
+  <!-- TOTAL BOX -->
+  <div class="total-wrap">
+    <div class="total-inner">
+      <div class="total-label">Gesamtbetrag inkl. MwSt.</div>
+      <div class="total-amount">CHF&nbsp;${chf(total)}</div>
+    </div>
+  </div>
+
+  <!-- CONDITIONS -->
+  <div class="conditions-grid">
+    <div class="cond-item">
+      <span class="cond-label">Zahlungsfrist</span>
+      <div class="cond-value">30 Tage netto</div>
+    </div>
+    <div class="cond-item">
+      <span class="cond-label">Gerichtsstand</span>
+      <div class="cond-value">${firmOrt}</div>
+    </div>
+    <div class="cond-item">
+      <span class="cond-label">G\u00fcltigkeit</span>
+      <div class="cond-value">60 Tage ab Datum</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLOSING -->
+<p class="closing-para">${t.cl}</p>
+
+<!-- SIGNATURE -->
+<div class="signature-block">
+  <div class="sig-farewell">Freundliche Gr\u00fcsse</div>
+  <div class="sig-line"></div>
+  <div class="sig-name">${sigName}</div>
+  <div class="sig-role">${firmName}</div>
+</div>
+
+<!-- FOOTER -->
+<div style="margin-top:auto">
+  <div class="footer-rule"></div>
+  <div class="footer-content">
+    <div class="footer-firm">${firmName}</div>
+    <div class="footer-meta">${firmAdr}</div>
+    <div class="footer-ref">UID&nbsp;${firmUID}${firmEmail ? '&nbsp;&middot;&nbsp;' + firmEmail : ''}</div>
+  </div>
+</div>
+
+<script>
+  window.onload = function() {
+    setTimeout(function() { window.print(); }, 500);
+  };
+<\/script>
+</body>
+</html>`);
+  w.document.close();
+  toast('Druckdialog \u00f6ffnet \u2014 \u00abAls PDF speichern\u00bb w\u00e4hlen');
+}
+
+/* ══ USER MENU ══ */
+function toggleUserMenu() {
+  const m = document.getElementById('user-menu');
+  const c = document.getElementById('user-chev');
+  const open = m.classList.toggle('open');
+  c.style.transform = open ? 'rotate(180deg)' : '';
+  if (open) setTimeout(R, 20);
+}
+function closeUserMenu() {
+  document.getElementById('user-menu').classList.remove('open');
+  document.getElementById('user-chev').style.transform = '';
+}
+
+/* ══ NOTIFICATIONS ══ */
+function toggleNotif() {
+  document.getElementById('notif-dd').classList.toggle('open');
+  setTimeout(R, 20);
+}
+
+/* ══ PROFIL MODAL ══ */
+function openProfil() {
+  closeUserMenu();
+  document.getElementById('p-uname').value = S.userName||'';
+  document.getElementById('p-firm').value  = S.firma.name||'';
+  document.getElementById('p-email').value = S.firma.email||'';
+  document.getElementById('profil-av').textContent = initials(S.userName);
+  openModal('modal-profil');
+}
+function saveProfil() {
+  const n = document.getElementById('p-uname').value.trim();
+  const f = document.getElementById('p-firm').value.trim();
+  const e = document.getElementById('p-email').value.trim();
+  if (n) S.userName = n;
+  if (f) S.firma.name = f;
+  if (e) S.firma.email = e;
+  saveState(); updateSidebarUser(); closeModal('modal-profil');
+  toast('Profil gespeichert');
+}
+
+/* ══ SETTINGS ══ */
+function loadSettings() {
+  document.getElementById('set-uname').value  = S.userName||'';
+  document.getElementById('set-name').value   = S.firma.name||'';
+  document.getElementById('set-uid').value    = S.firma.uid||'';
+  document.getElementById('set-ort').value    = S.firma.ort||'';
+  document.getElementById('set-email').value  = S.firma.email||'';
+  document.getElementById('set-adr').value    = S.firma.adr||'';
+  document.getElementById('set-mwst').value   = S.firma.mwst||'8.1';
+  document.getElementById('set-zfrist').value = S.firma.zfrist||'30';
+  document.getElementById('set-guelt').value  = S.firma.guelt||'60';
+}
+function liveUser() {
+  const n = document.getElementById('set-uname').value;
+  if (n) { S.userName = n; updateSidebarUser(); }
+}
+function saveSettings() {
+  const n = document.getElementById('set-uname').value.trim();
+  if (n) S.userName = n;
+  const fn = document.getElementById('set-name').value;
+  if (fn) S.firma.name = fn;
+  S.firma.uid    = document.getElementById('set-uid').value    || S.firma.uid;
+  S.firma.ort    = document.getElementById('set-ort').value    || S.firma.ort;
+  S.firma.email  = document.getElementById('set-email').value;
+  S.firma.adr    = document.getElementById('set-adr').value    || S.firma.adr;
+  S.firma.mwst   = document.getElementById('set-mwst').value   || '8.1';
+  S.firma.zfrist = document.getElementById('set-zfrist').value || '30';
+  S.firma.guelt  = document.getElementById('set-guelt').value  || '60';
+  saveState(); updateSidebarUser(); toast('Einstellungen gespeichert');
+}
+
+/* ══ REGELWERK ACCORDION ══ */
+function toggleRule(id) {
+  const b = document.getElementById('rb-' + id);
+  const c = document.getElementById('rc-' + id);
+  const open = b.classList.toggle('open');
+  c.style.transform = open ? 'rotate(90deg)' : '';
+  setTimeout(R, 20);
+}
+
+/* ══ MODALS ══ */
+function openModal(id) { document.getElementById(id).classList.add('open'); setTimeout(R, 30); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function bgClose(e, id) { if (e.target.id === id) closeModal(id); }
+
+/* ══ GLOBAL EVENTS ══ */
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.notif-wrap')) document.getElementById('notif-dd').classList.remove('open');
+  if (!e.target.closest('.sb-user')) closeUserMenu();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    ['modal-neue','modal-preview','modal-profil'].forEach(closeModal);
+    document.getElementById('notif-dd').classList.remove('open');
+    closeUserMenu();
+  }
+});
+
+/* ══ INIT ══ */
+loadState();
+R();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(R);
+setTimeout(R, 300);
+setTimeout(R, 800);
+</script>
+</body>
+</html>
